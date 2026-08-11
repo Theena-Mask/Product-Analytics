@@ -1,0 +1,2 @@
+# stdlib only — nothing to install. This file exists so the README's
+# 'pip install -r scripts/requirements.txt' step has something to run.

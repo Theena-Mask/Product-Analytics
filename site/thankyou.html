@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Order confirmed — Solstice Outdoor Co.</title>
+<link rel="stylesheet" href="assets/css/style.css" />
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-W48BV4SP');</script>
+</head>
+<body>
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-W48BV4SP"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+
+<header class="solstice-header">
+  <div class="wrap">
+    <a href="index.html" class="solstice-logo">Solstice<span>.</span></a>
+    <nav class="solstice-nav">
+      <a href="shop.html">Shop</a>
+      <a href="index.html#story" class="track-click">Our Story</a>
+      <a href="utm-test.html">UTM test links</a>
+      <a href="checkout.html" class="cart-pill">Cart <span class="cart-badge" data-cart-count>0</span></a>
+    </nav>
+  </div>
+</header>
+
+<div class="wrap thankyou">
+  <div class="stamp">✓</div>
+  <h1 style="font-size:30px;">Order confirmed</h1>
+  <p style="color:#55564E;" id="order-line"></p>
+  <a href="shop.html" class="btn btn-primary" style="margin-top:18px;">Keep shopping</a>
+
+  <div id="post-purchase-lead" style="max-width:420px;margin:36px auto 0;display:none;">
+    <div class="panel">
+      <h2 style="font-size:16px;">Want early access to new drops?</h2>
+      <form class="lead-form" id="post-lead-form" style="margin-top:12px;">
+        <input type="email" placeholder="you@example.com" required />
+        <button type="submit" class="btn btn-primary">Join</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<footer class="solstice-footer">
+  <div class="wrap">
+    <span>Solstice Outdoor Co. — demo storefront, portfolio project</span>
+    <span>No real transactions occur on this site</span>
+  </div>
+</footer>
+
+<script src="assets/js/analytics.js"></script>
+<script>
+  const stored = sessionStorage.getItem("solstice_last_order");
+  const params = new URLSearchParams(window.location.search);
+  const orderId = params.get("order") || "SOL-DEMO0001";
+
+  let order;
+  if (stored) {
+    order = JSON.parse(stored);
+  } else {
+    // Direct visit / refresh fallback — build a plausible single-item order
+    // so the page (and the purchase event) still works standalone.
+    const p = SOLSTICE_CATALOG[0];
+    order = { orderId, items: [{ item_id: p.id, item_name: p.name, price: p.price, quantity: 1 }],
+      value: p.price + 9.95 + Math.round(p.price * 0.08 * 100) / 100, shipping: 9.95,
+      tax: Math.round(p.price * 0.08 * 100) / 100, currency: "USD" };
+  }
+
+  document.getElementById("order-line").textContent =
+    `Order ${order.orderId} — $${order.value.toFixed(2)} total. This is a demo; nothing ships.`;
+
+  // purchase — fires once, this page, per order
+  window.addEventListener("load", () => {
+    const score = solsticeAddLeadScore("purchase");
+    solsticePushEcommerce("purchase", {
+      transaction_id: order.orderId,
+      currency: order.currency,
+      value: order.value,
+      shipping: order.shipping,
+      tax: order.tax,
+      items: order.items,
+    });
+
+    // 30% of purchasers get a post-purchase newsletter prompt.
+    if (Math.random() < 0.30) {
+      document.getElementById("post-purchase-lead").style.display = "block";
+    }
+  });
+
+  document.getElementById("post-lead-form")?.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const score = solsticeGetLeadScore();
+    const utm = solsticeCaptureUtm();
+    window.dataLayer.push({
+      event: "generate_lead",
+      lead_type: "post_purchase_newsletter",
+      lead_score: score,
+      ...utm,
+    });
+    e.target.innerHTML = "<span style='font-weight:700;color:var(--pine)'>You're on the list.</span>";
+  });
+
+  sessionStorage.removeItem("solstice_last_order");
+</script>
+</body>
+</html>

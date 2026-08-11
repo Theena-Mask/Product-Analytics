@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Checkout — Solstice Outdoor Co.</title>
+<link rel="stylesheet" href="assets/css/style.css" />
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-W48BV4SP');</script>
+</head>
+<body>
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-W48BV4SP"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+
+<header class="solstice-header">
+  <div class="wrap">
+    <a href="index.html" class="solstice-logo">Solstice<span>.</span></a>
+    <nav class="solstice-nav">
+      <a href="shop.html">Shop</a>
+      <a href="index.html#story" class="track-click">Our Story</a>
+      <a href="utm-test.html">UTM test links</a>
+      <a href="checkout.html" class="cart-pill">Cart <span class="cart-badge" data-cart-count>0</span></a>
+    </nav>
+  </div>
+</header>
+
+<div class="wrap checkout-grid" id="checkout-root">
+  <div class="panel" id="empty-cart-panel" style="display:none;">
+    <h2>Your cart is empty</h2>
+    <p style="color:#55564E;">Add something from the shop first.</p>
+    <a href="shop.html" class="btn btn-primary">Go to shop</a>
+  </div>
+
+  <form class="panel" id="checkout-form">
+    <h2 style="font-size:18px;">Shipping details</h2>
+    <div class="field"><label>Full name</label><input type="text" required /></div>
+    <div class="field"><label>Email</label><input type="email" required /></div>
+    <div class="field-row">
+      <div class="field"><label>City</label><input type="text" required /></div>
+      <div class="field"><label>PIN code</label><input type="text" required /></div>
+    </div>
+    <h2 style="font-size:18px;margin-top:22px;">Payment</h2>
+    <div class="field"><label>Card number</label><input type="text" id="card-number" placeholder="4242 4242 4242 4242" required /></div>
+    <div class="field-row">
+      <div class="field"><label>Expiry</label><input type="text" placeholder="MM/YY" required /></div>
+      <div class="field"><label>CVC</label><input type="text" required /></div>
+    </div>
+    <button type="submit" class="btn btn-clay btn-block" style="margin-top:8px;">Place order</button>
+    <p style="font-size:11.5px;color:var(--sage);text-align:center;margin-top:10px;">Demo checkout — no card is charged.</p>
+  </form>
+
+  <div class="panel" id="order-summary">
+    <h2 style="font-size:16px;">Order summary</h2>
+    <div id="order-lines"></div>
+    <div class="order-line" id="line-shipping"><span>Shipping</span><span id="ship-value"></span></div>
+    <div class="order-line" id="line-tax"><span>Tax</span><span id="tax-value"></span></div>
+    <div class="order-total"><span>Total</span><span id="total-value"></span></div>
+  </div>
+</div>
+
+<footer class="solstice-footer">
+  <div class="wrap">
+    <span>Solstice Outdoor Co. — demo storefront, portfolio project</span>
+    <span>No real transactions occur on this site</span>
+  </div>
+</footer>
+
+<script src="assets/js/analytics.js"></script>
+<script>
+  const cart = solsticeGetCart();
+  const linesEl = document.getElementById("order-lines");
+  const form = document.getElementById("checkout-form");
+
+  if (cart.length === 0) {
+    document.getElementById("empty-cart-panel").style.display = "block";
+    form.style.display = "none";
+    document.getElementById("order-summary").style.display = "none";
+  } else {
+    cart.forEach((i) => {
+      const row = document.createElement("div");
+      row.className = "order-line";
+      row.innerHTML = `<span>${i.name} × ${i.qty}</span><span>$${(i.price * i.qty).toFixed(2)}</span>`;
+      linesEl.appendChild(row);
+    });
+
+    const cartValue = solsticeCartValue(cart);
+    const shipping = cartValue > 120 ? 0 : 9.95;
+    const tax = Math.round(cartValue * 0.08 * 100) / 100;
+    const total = Math.round((cartValue + shipping + tax) * 100) / 100;
+
+    document.getElementById("ship-value").textContent = shipping === 0 ? "Free" : `$${shipping.toFixed(2)}`;
+    document.getElementById("tax-value").textContent = `$${tax.toFixed(2)}`;
+    document.getElementById("total-value").textContent = `$${total.toFixed(2)}`;
+
+    // begin_checkout — fires once, page load
+    window.addEventListener("load", () => {
+      solsticeAddLeadScore("begin_checkout");
+      solsticePushEcommerce("begin_checkout", {
+        currency: "USD",
+        value: cartValue,
+        items: solsticeItemsFromCart(cart),
+      });
+    });
+
+    // add_payment_info — fires once, when the card field is first filled
+    let paymentInfoFired = false;
+    document.getElementById("card-number").addEventListener("blur", (e) => {
+      if (paymentInfoFired || !e.target.value.trim()) return;
+      paymentInfoFired = true;
+      solsticePushEcommerce("add_payment_info", {
+        currency: "USD",
+        value: cartValue,
+        payment_type: "Card",
+        items: solsticeItemsFromCart(cart),
+      });
+    });
+
+    // purchase — on submit, handed off to thank-you page
+    form.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const orderId = "SOL-" + Math.random().toString(16).slice(2, 10).toUpperCase();
+      const order = {
+        orderId, items: solsticeItemsFromCart(cart),
+        value: total, shipping, tax, currency: "USD",
+      };
+      sessionStorage.setItem("solstice_last_order", JSON.stringify(order));
+      solsticeClearCart();
+      window.location.href = `thankyou.html?order=${orderId}`;
+    });
+  }
+</script>
+</body>
+</html>

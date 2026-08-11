@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Shop — Solstice Outdoor Co.</title>
+<link rel="stylesheet" href="assets/css/style.css" />
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-W48BV4SP');</script>
+</head>
+<body>
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-W48BV4SP"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+
+<header class="solstice-header">
+  <div class="wrap">
+    <a href="index.html" class="solstice-logo">Solstice<span>.</span></a>
+    <nav class="solstice-nav">
+      <a href="shop.html">Shop</a>
+      <a href="index.html#story" class="track-click">Our Story</a>
+      <a href="utm-test.html">UTM test links</a>
+      <a href="checkout.html" class="cart-pill">Cart <span class="cart-badge" data-cart-count>0</span></a>
+    </nav>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="section-head" style="padding-top:36px;">
+    <h2>All gear</h2>
+    <span style="font-size:13px;color:var(--sage)"><span id="count-label"></span> items</span>
+  </div>
+  <div class="grid" id="shop-grid"></div>
+</div>
+
+<footer class="solstice-footer">
+  <div class="wrap">
+    <span>Solstice Outdoor Co. — demo storefront, portfolio project</span>
+    <span>No real transactions occur on this site</span>
+  </div>
+</footer>
+
+<script src="assets/js/analytics.js"></script>
+<script>
+  const grid = document.getElementById("shop-grid");
+  document.getElementById("count-label").textContent = SOLSTICE_CATALOG.length;
+
+  SOLSTICE_CATALOG.forEach((p) => {
+    const a = document.createElement("a");
+    a.href = `product.html?id=${p.id}`;
+    a.className = "card";
+    a.innerHTML = `
+      <div class="card-media">${p.name}</div>
+      <div class="card-body">
+        <div class="card-cat">${p.category}</div>
+        <div class="card-name">${p.name}</div>
+        <div class="card-price">$${p.price.toFixed(2)}</div>
+      </div>`;
+    grid.appendChild(a);
+  });
+
+  // view_item_list — fires once, page load
+  window.addEventListener("load", () => {
+    solsticePushEcommerce("view_item_list", {
+      item_list_id: "all_products",
+      item_list_name: "All Gear",
+      items: SOLSTICE_CATALOG.map((p, i) => ({
+        item_id: p.id, item_name: p.name, price: p.price, index: i,
+      })),
+    });
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title id="page-title">Product — Solstice Outdoor Co.</title>
+<link rel="stylesheet" href="assets/css/style.css" />
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-W48BV4SP');</script>
+</head>
+<body>
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-W48BV4SP"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+
+<header class="solstice-header">
+  <div class="wrap">
+    <a href="index.html" class="solstice-logo">Solstice<span>.</span></a>
+    <nav class="solstice-nav">
+      <a href="shop.html">Shop</a>
+      <a href="index.html#story" class="track-click">Our Story</a>
+      <a href="utm-test.html">UTM test links</a>
+      <a href="checkout.html" class="cart-pill">Cart <span class="cart-badge" data-cart-count>0</span></a>
+    </nav>
+  </div>
+</header>
+
+<div class="wrap pdp">
+  <div class="pdp-media" id="pdp-media"></div>
+  <div>
+    <span class="eyebrow" id="pdp-cat"></span>
+    <h1 id="pdp-name" style="font-size:28px;"></h1>
+    <div class="pdp-price" id="pdp-price"></div>
+    <p class="pdp-desc">Field-tested construction, taped seams, and a fit built to layer.
+      This is placeholder copy for a demo product — nothing here ships.</p>
+    <div class="qty-row">
+      <label for="qty" style="font-size:13px;font-weight:700;">Qty</label>
+      <input type="number" id="qty" value="1" min="1" max="5" />
+    </div>
+    <button class="btn btn-clay btn-block" id="add-to-cart-btn">Add to cart</button>
+  </div>
+</div>
+
+<footer class="solstice-footer">
+  <div class="wrap">
+    <span>Solstice Outdoor Co. — demo storefront, portfolio project</span>
+    <span>No real transactions occur on this site</span>
+  </div>
+</footer>
+
+<script src="assets/js/analytics.js"></script>
+<script>
+  const params = new URLSearchParams(window.location.search);
+  const productId = params.get("id") || SOLSTICE_CATALOG[0].id;
+  const product = solsticeGetProduct(productId);
+
+  document.getElementById("page-title").textContent = `${product.name} — Solstice Outdoor Co.`;
+  document.getElementById("pdp-media").textContent = product.name;
+  document.getElementById("pdp-cat").textContent = product.category;
+  document.getElementById("pdp-name").textContent = product.name;
+  document.getElementById("pdp-price").textContent = `$${product.price.toFixed(2)}`;
+
+  // view_item — fires once, page load
+  window.addEventListener("load", () => {
+    solsticeAddLeadScore("view_item");
+    solsticePushEcommerce("view_item", {
+      currency: "USD",
+      value: product.price,
+      items: [{ item_id: product.id, item_name: product.name, price: product.price, quantity: 1 }],
+    });
+  });
+
+  // add_to_cart — fires on button click
+  document.getElementById("add-to-cart-btn").addEventListener("click", () => {
+    const qty = Math.max(1, parseInt(document.getElementById("qty").value, 10) || 1);
+    const cart = solsticeAddToCart(product.id, qty);
+    solsticeAddLeadScore("add_to_cart");
+    solsticePushEcommerce("add_to_cart", {
+      currency: "USD",
+      value: product.price * qty,
+      items: [{ item_id: product.id, item_name: product.name, price: product.price, quantity: qty }],
+    });
+    const count = cart.reduce((s, i) => s + i.qty, 0);
+    const badge = document.querySelector("[data-cart-count]");
+    if (badge) { badge.textContent = count; badge.style.display = "inline-flex"; }
+
+    const btn = document.getElementById("add-to-cart-btn");
+    const original = btn.textContent;
+    btn.textContent = "Added ✓";
+    setTimeout(() => { btn.textContent = original; }, 1400);
+  });
+</script>
+</body>
+</html>

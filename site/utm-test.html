@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>UTM test links — Solstice Outdoor Co.</title>
+<link rel="stylesheet" href="assets/css/style.css" />
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-W48BV4SP');</script>
+</head>
+<body>
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-W48BV4SP"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+
+<header class="solstice-header">
+  <div class="wrap">
+    <a href="index.html" class="solstice-logo">Solstice<span>.</span></a>
+    <nav class="solstice-nav">
+      <a href="shop.html">Shop</a>
+      <a href="index.html#story" class="track-click">Our Story</a>
+      <a href="utm-test.html">UTM test links</a>
+      <a href="checkout.html" class="cart-pill">Cart <span class="cart-badge" data-cart-count>0</span></a>
+    </nav>
+  </div>
+</header>
+
+<div class="wrap" style="padding-top:36px;padding-bottom:60px;">
+  <h1 style="font-size:24px;">UTM test links</h1>
+  <p style="color:#55564E;max-width:560px;">
+    Click any link below to land on the homepage carrying that channel's UTM
+    parameters. Attribution persists across the whole session (sessionStorage),
+    so anything you do afterwards — add to cart, checkout, submit the lead
+    form — carries this source through to <code>generate_lead</code> and
+    shows up correctly in Traffic acquisition. Mix matches the channel split
+    used in the interview prep numbers: cpc 30% / direct 25% / paid_social 20% / email 15% / affiliate 10%.
+  </p>
+  <ul class="utm-list" id="link-list"></ul>
+</div>
+
+<footer class="solstice-footer">
+  <div class="wrap">
+    <span>Solstice Outdoor Co. — demo storefront, portfolio project</span>
+    <span>No real transactions occur on this site</span>
+  </div>
+</footer>
+
+<script src="assets/js/analytics.js"></script>
+<script>
+  const LINKS = [
+    { label: "Google CPC — search: hiking boots", source: "google", medium: "cpc", campaign: "search_hiking_boots" },
+    { label: "Direct — no UTM (typed URL / bookmark)", source: "", medium: "", campaign: "" },
+    { label: "Facebook — paid social carousel", source: "facebook", medium: "paid_social", campaign: "aw25_carousel" },
+    { label: "Klaviyo — weekly email", source: "klaviyo", medium: "email", campaign: "weekly_newsletter" },
+    { label: "Affiliate — trail-guide partner", source: "trailguide", medium: "affiliate", campaign: "partner_q4" },
+  ];
+
+  const list = document.getElementById("link-list");
+  LINKS.forEach((l) => {
+    let href = "index.html";
+    if (l.source) {
+      const qs = new URLSearchParams({
+        utm_source: l.source, utm_medium: l.medium, utm_campaign: l.campaign,
+      });
+      href += "?" + qs.toString();
+    }
+    const li = document.createElement("li");
+    li.innerHTML = `<strong>${l.label}</strong><br/><code>${href}</code>`;
+    const a = document.createElement("a");
+    a.href = href;
+    a.className = "btn btn-ghost";
+    a.style.marginTop = "10px";
+    a.style.display = "inline-flex";
+    a.textContent = "Open this link";
+    li.appendChild(document.createElement("br"));
+    li.appendChild(a);
+    list.appendChild(li);
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Solstice Outdoor Co. — Gear built for the long light</title>
+<meta name="description" content="Demo storefront for GA4/GTM portfolio project. Not a real store — no real payments." />
+<link rel="stylesheet" href="assets/css/style.css" />
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-W48BV4SP');</script>
+<!-- End Google Tag Manager -->
+</head>
+<body>
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-W48BV4SP"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
+
+<header class="solstice-header">
+  <div class="wrap">
+    <a href="index.html" class="solstice-logo">Solstice<span>.</span></a>
+    <nav class="solstice-nav">
+      <a href="shop.html">Shop</a>
+      <a href="index.html#story" class="track-click">Our Story</a>
+      <a href="utm-test.html">UTM test links</a>
+      <a href="checkout.html" class="cart-pill">Cart <span class="cart-badge" data-cart-count>0</span></a>
+    </nav>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="wrap">
+    <span class="eyebrow" style="color:#E8B99A">Autumn / Winter</span>
+    <h1>Gear built for the long light and the short days after it.</h1>
+    <p>Shell layers, trail footwear and packs tested on the ridgelines we design them for. This is a demo storefront — no real payments, no real shipping.</p>
+    <a href="shop.html" class="btn btn-clay track-click">Shop the collection</a>
+  </div>
+</section>
+
+<div class="wrap">
+  <div class="section-head">
+    <h2>Featured this week</h2>
+    <a href="shop.html" style="font-size:13.5px;font-weight:700;color:var(--pine)">View all →</a>
+  </div>
+  <div class="grid" id="featured-grid"></div>
+</div>
+
+<div class="wrap" id="story" style="padding:20px 0 10px;">
+  <h2>Our story</h2>
+  <p style="max-width:640px;color:#55564E;line-height:1.7;">
+    Solstice started as three friends re-stitching worn-out shells between trips.
+    Every product on this site is fictional — this store exists to demonstrate a
+    GA4 + GTM tracking implementation end to end, from the dataLayer up.
+  </p>
+</div>
+
+<section class="lead-band">
+  <div class="wrap">
+    <h2>Get a free trail-layering guide</h2>
+    <p style="color:#55564E;max-width:420px;">Drop your email and we'll send a one-page guide to layering for shoulder-season hikes.</p>
+    <form class="lead-form" id="stylist-form">
+      <input type="email" placeholder="you@example.com" required />
+      <button type="submit" class="btn btn-primary">Send it</button>
+    </form>
+  </div>
+</section>
+
+<footer class="solstice-footer">
+  <div class="wrap">
+    <span>Solstice Outdoor Co. — demo storefront, portfolio project</span>
+    <span>No real transactions occur on this site</span>
+  </div>
+</footer>
+
+<script src="assets/js/analytics.js"></script>
+<script>
+  // Render featured products (first 4 of catalog)
+  const grid = document.getElementById("featured-grid");
+  SOLSTICE_CATALOG.slice(0, 4).forEach((p) => {
+    const a = document.createElement("a");
+    a.href = `product.html?id=${p.id}`;
+    a.className = "card";
+    a.innerHTML = `
+      <div class="card-media">${p.name}</div>
+      <div class="card-body">
+        <div class="card-cat">${p.category}</div>
+        <div class="card-name">${p.name}</div>
+        <div class="card-price">$${p.price.toFixed(2)}</div>
+      </div>`;
+    grid.appendChild(a);
+  });
+
+  // Lead-gen form → generate_lead event
+  document.getElementById("stylist-form").addEventListener("submit", (e) => {
+    e.preventDefault();
+    const score = solsticeAddLeadScore("contact_form_submit");
+    const utm = solsticeCaptureUtm();
+    window.dataLayer.push({
+      event: "generate_lead",
+      lead_type: "layering_guide",
+      lead_score: score,
+      ...utm,
+    });
+    e.target.innerHTML = "<span style='font-weight:700;color:var(--pine)'>Sent — check your inbox.</span>";
+  });
+</script>
+</body>
+</html>
